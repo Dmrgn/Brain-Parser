@@ -1,0 +1,58 @@
+Creates a triangle with a variable height
+
+,           read height of triangle
+
+[
+
+    set the second cell to 0
+    ^{1}={0}
+
+    put half the value of height into the second cell
+    ^{0}[               while (height is greater than 0)
+        >+                  add 1 to second cell
+        >++                 add 2 to third cell
+    ^{0}--]             subtract 2 from height
+    [^{0}+ ^{2}-]       move third cell into height
+
+    copy the second cell into the third cell
+    ^{1}[               while (second cell is greater than 0)
+        >+                  add 1 to the third cell
+        >+                  add 1 to the forth cell
+    ^{1}-]              subtract 1 from the second cell
+    [^{1}+ ^{3}-]       move forth cell into the second cell
+
+    drain third cell and print spaces for each iteration
+    [                   while (third cell is greater than 0)
+        ^{20}={' '}.{'c'}   print a space
+    ^{2}-]              subtract 1 from the third cell
+
+    print a star
+    ^{20}={'*'}.{'c'}    print a *
+
+    copy the twentyth cell into the twenty first cell
+    ^{21}[               while (twentyth cell is greater than 0)
+        >+                  add 1 to the twenty first cell
+        >+                  add 1 to the twenty second cell
+    ^{21}-]              subtract 1 from the twentyth cell
+    [^{21}+ ^{23}-]       move twenty second cell into the twentyth cell
+
+    drain twenty first cell and print spaces for each iteration
+    [                   while (third cell is greater than 0)
+        ^{20}={' '}.{'c'}   print a space
+    ^{22}-]              subtract 1 from the twenty first cell
+
+    print a star followed by a new line
+    ^{20}={'*'}.{'c'}    print a *
+    ^{20}={10}.{'c'}     print a \n
+
+    add 1 to cell 20
+    ^{21}+
+
+^{0}-]
+
+drain cell twenty and print a start for each iteration
+^{20}={' '}.{'c'}     print a space
+^{21}[
+    ^{20}={'*'}.{'c'}    print a *
+^{21}-]
+^{20}={10}.{'c'}     print a \n

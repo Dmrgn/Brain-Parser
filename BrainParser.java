@@ -196,7 +196,7 @@ public class BrainParser extends TuringMachine {
             } else if (command.equals("eblock")) {
                 if (blocks.size() == 0)
                     crash("Found ending block without matching starting block.");
-                if (get() != 0) {
+                if (get() > 0) {
                     tokenIndex = blocks.get(blocks.size() - 1);
                 } else {
                     blocks.remove(blocks.size()-1);
