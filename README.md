@@ -1,4 +1,4 @@
-# BrainFlip
+# BrainParser
 
 An ever so slightly less painful version of Brain****.
 
