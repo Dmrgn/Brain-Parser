@@ -45,6 +45,14 @@ public class BrainParser extends TuringMachine {
      */
     private Scanner scanner = new Scanner(System.in);
     /**
+     * The max value that can be stored in a cell before it wraps (if cell wrapping is enabled) or errors.
+     */
+    private long cellMax = Long.MAX_VALUE;
+    /**
+     * The min value that can be stored in a cell before it wraps (if cell wrapping is enabled) or errors.
+     */
+    private long cellMin = Long.MIN_VALUE;
+    /**
      * Array of the indexes of the tokens "sblock" (in bp "[" or "starting block").
      * Array uses the stack architecture. When an ending block token is read during
      * the runCommand() method, the sblock at the top of the stack (the most
@@ -62,25 +70,53 @@ public class BrainParser extends TuringMachine {
      * @see #runCommand(String, String)
      */
     private int tokenIndex = 0;
-
+    /**
+     * String containing the previously run program.
+     */
+    public String previousProgram = "";
+    /**
+     * A String containing the current standard of the language being used by the parser.
+     */
+    private String langaugeStandard;
+    /**
+     * boolean containing if cells should wrap when they meet their max or min values.
+     */
+    private boolean doesWrapping;
+    /**
+     * ArrayList of currently parsed tokens.
+     */
+    ArrayList<String> tokens;
     /**
      * Constructor creates a BrainParser with passed tape length
      * 
      * @see TuringMachine#TuringMachine(int)
      * @param size The tape length of the {@link TuringMachine} to be instansiated.
      */
-    public BrainParser(int size) {
+    public BrainParser(int size, long _cellMin, long _cellMax) {
         super(size);
+        setCellMin(_cellMin);
+        setCellMax(_cellMax);
     }
-
     /**
      * Constructor creates a BrainParser with {@link TuringMachine#DEFUALT_SIZE
-     * defualt} tape length
+     * defualt} tape length and default 
      * 
      * @see TuringMachine#TuringMachine()
      */
     public BrainParser() {
         super();
+        setLanguageStandard("tacobell");
+    }
+
+    /**
+     * Constructor creates a BrainParser with {@link TuringMachine#DEFUALT_SIZE
+     * defualt} tape length and default 
+     * 
+     * @see TuringMachine#TuringMachine()
+     */
+    public BrainParser(String _languageStandard) {
+        super();
+        setLanguageStandard(_languageStandard);
     }
 
     /**
@@ -150,7 +186,7 @@ public class BrainParser extends TuringMachine {
      * @return An ArrayList<String> of bp tokens
      */
     public ArrayList<String> parse(String program) {
-        ArrayList<String> tokens = new ArrayList<String>();
+        tokens = new ArrayList<String>();
         // the index of the current character looked at by the parser
         int progIndex = 0;
         try {
@@ -240,7 +276,8 @@ public class BrainParser extends TuringMachine {
      * @param program A valid bp program represented by a String
      */
     public void runProgram(String program) {
-        ArrayList<String> tokens = parse(program);
+        previousProgram = program;
+        tokens = parse(program);
         for (tokenIndex = 0; tokenIndex < tokens.size(); tokenIndex++) {
             // System.out.println(tokens.get(i));
             if (tokenIndex < tokens.size() - 1) {
@@ -251,6 +288,20 @@ public class BrainParser extends TuringMachine {
                     runCommand(tokens.get(tokenIndex));
             } else
                 runCommand(tokens.get(tokenIndex));
+        }
+    }
+
+    /**
+     * Checks if the current cell is out of its min and max values and wraps accordingly, also checks if wrapping is enabled.
+     */
+    private void wrap() {
+        if (doesWrapping) {
+            long curval = get();
+            if (curval < cellMin) {
+                set(cellMax+(curval-cellMin));
+            } else if (curval > cellMax) {
+                set(cellMin+(curval-cellMax));
+            }
         }
     }
 
@@ -273,10 +324,13 @@ public class BrainParser extends TuringMachine {
         try {
             if (command.equals("incr")) {
                 set(get() + value);
+                wrap();
             } else if (command.equals("decr")) {
                 set(get() - value);
+                wrap();
             } else if (command.equals("set")) {
                 set(value);
+                wrap();
             } else if (command.equals("right")) {
                 traverse((int) value);
             } else if (command.equals("left")) {
@@ -298,6 +352,7 @@ public class BrainParser extends TuringMachine {
                     set(scanner.next().charAt(0));
                 else
                     set(scanner.nextLong());
+                wrap();
             } else if (command.equals("out")) {
                 if (value == 'c')
                     System.out.print((char) (get() % 255));
@@ -325,5 +380,97 @@ public class BrainParser extends TuringMachine {
                 || command.equals("out")) {
             runCommand(command, "T0");
         }
+    }
+
+    /**
+     * Sets the the current scanner
+     */
+    public void setScanner(Scanner _scanner) {
+        _scanner = scanner;
+    }
+    /** 
+     * Gets a reference to the current scanner 
+     */
+    public Scanner getScanner() {
+        return scanner;
+    }
+    /**
+     * Sets the minimum cell value
+     */
+    public void setCellMin(long newMin) {
+        cellMin = newMin;
+    }
+    /**
+     * Sets the cell min to a standard value.
+     */
+    public void setCellMin() {
+        cellMin = 0;
+    }
+    /**
+     * Get the current cell minimum
+     */
+    public long getCellMin() {
+        return cellMin;
+    }
+    /**
+     * Sets the maximum cell value
+     */
+    public void setCellMax(long newMax) {
+        cellMax = newMax;
+    }
+    /**
+     * Sets the cell maximum to a standard value.
+     */
+    public void setCellMax() {
+        cellMax = 255;
+    }
+    /**
+     * Get the current cell maximum
+     */
+    public long getCellMax() {
+        return cellMax;
+    }
+    /**
+     * Gets the current language standard
+     */
+    public String getLanguageStandard() {
+        return langaugeStandard;
+    }
+    /**
+     * Attempts to set the current langauge standard.
+     * @param standard A string containing the name of the new standard.
+     * @return boolean false upon failure, otherwise true.
+     */
+    public boolean setLanguageStandard(String standard) {
+        standard = standard.trim().toLowerCase();
+        if (standard.equals("tacobell")) {
+            setCellMax();
+            setCellMin();
+            setWrapping(true);
+            setTapeLength(30000);
+        } else if(standard.equals("bp")) {
+            setCellMax(Integer.MAX_VALUE);
+            setCellMin(0);
+            setWrapping(true);
+            setTapeLength(50000);
+        } else if (standard.equals("extbp")) {
+            setCellMax(Long.MAX_VALUE);
+            setCellMin(Long.MIN_VALUE);
+            setWrapping(true);
+            setTapeLength(100000);
+        }
+        return true;
+    }
+    /**
+     * Sets whether cells should wrap if they reach their min or max
+     */
+    public void setWrapping(boolean _doesWrap) {
+        doesWrapping = _doesWrap;
+    }
+    /**
+     * Gets whether cells should wrap if they reach their min or max
+     */
+    public boolean getWrapping() {
+        return doesWrapping;
     }
 }

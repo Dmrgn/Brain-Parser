@@ -6,8 +6,8 @@
  *              interact with it
  */
 public class TuringMachine {
-    /** The defualt size of a tape */
-    final private static int DEFUALT_SIZE = 1000;
+    /** The default size of a tape */
+    final private static int DEFAULT_SIZE = 1000;
     /** The length of the tape */
     private int tapeLength;
     /** Pointer to the current location on the tape */
@@ -32,7 +32,7 @@ public class TuringMachine {
     }
 
     /**
-     * Constructor to create a turing machine with the {@link #DEFUALT_SIZE defualt
+     * Constructor to create a turing machine with the {@link #DEFAULT_SIZE default
      * tape size}.
      * 
      * @see #TuringMachine()
@@ -40,8 +40,8 @@ public class TuringMachine {
      * @param size The length of the tape to be created with the machine
      */
     public TuringMachine() {
-        tape = new long[DEFUALT_SIZE];
-        tapeLength = DEFUALT_SIZE;
+        tape = new long[DEFAULT_SIZE];
+        tapeLength = DEFAULT_SIZE;
     }
 
     /**
@@ -106,7 +106,6 @@ public class TuringMachine {
         tapeLength = tape.length;
     }
 
-    // TODO: implement
     /**
      * Attempts to set the tape length to the specified value.
      * 
