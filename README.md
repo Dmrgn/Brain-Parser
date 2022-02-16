@@ -11,8 +11,12 @@ To execute the program, compile and run the Main class: ```javac Main.java && ja
 
 The basic commands are the same, however two new commands have been added:
 ```
-^{0} moves the pointer to the first cell
+^{value} moves the pointer to the 'value'th cell
+={value} sets the current cell to 'value'
+e.g
+^{10} moves the pointer to the 10th cell
 ={100} sets the current cell to 100
+={'h'} sets the current cell to the ascii value of 'h'
 ```
 The ```command{value}``` syntax allows you to write long chains of commands in a more concise manner:
 instead of:
