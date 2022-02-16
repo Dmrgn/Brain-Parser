@@ -83,6 +83,10 @@ public class BrainParser extends TuringMachine {
      */
     private boolean doesWrapping;
     /**
+     * boolean containing if pointer should wrap to the first cell if it goes past the last cell and vice versa
+     */
+    private boolean doesPointerWrapping;
+    /**
      * ArrayList of currently parsed tokens.
      */
     ArrayList<String> tokens;
@@ -93,7 +97,7 @@ public class BrainParser extends TuringMachine {
      * @param size The tape length of the {@link TuringMachine} to be instansiated.
      */
     public BrainParser(int size, long _cellMin, long _cellMax) {
-        super(size);
+        super(size, false);
         setCellMin(_cellMin);
         setCellMax(_cellMax);
     }
@@ -306,6 +310,20 @@ public class BrainParser extends TuringMachine {
     }
 
     /**
+     * Checks if the pointer is in an invalid position 
+     */
+    private void wrapPointer() {
+        if (doesPointerWrapping) {
+            long curval = getPointer();
+            if (curval < 0) {
+                setPointer(getTapeLength()-1);
+            } else if (curval > getTapeLength()) {
+                setPointer(0);
+            }
+        }
+    }
+
+    /**
      * Runs a command token with a passed value. A value is a token prefixed
      * with the {@link #VALUE_PREFIX token value prefix} that denotes a character
      * literal or number to be used in conjuction with the command token that comes
@@ -333,10 +351,15 @@ public class BrainParser extends TuringMachine {
                 wrap();
             } else if (command.equals("right")) {
                 traverse((int) value);
+                wrapPointer();
             } else if (command.equals("left")) {
                 traverse(-(int) value);
+                wrapPointer();
+
             } else if (command.equals("goto")) {
                 setPointer((int) value);
+                wrapPointer();
+
             } else if (command.equals("sblock")) {
                 blocks.add(tokenIndex);
             } else if (command.equals("eblock")) {
@@ -347,6 +370,7 @@ public class BrainParser extends TuringMachine {
                 } else {
                     blocks.remove(blocks.size() - 1);
                 }
+                wrapPointer();
             } else if (command.equals("in")) {
                 if (value == 'c')
                     set(scanner.next().charAt(0));
@@ -443,20 +467,24 @@ public class BrainParser extends TuringMachine {
      */
     public boolean setLanguageStandard(String standard) {
         standard = standard.trim().toLowerCase();
+        langaugeStandard = standard;
         if (standard.equals("tacobell")) {
             setCellMax();
             setCellMin();
             setWrapping(true);
+            setPointerWrapping(true);
             setTapeLength(30000);
         } else if(standard.equals("bp")) {
             setCellMax(Integer.MAX_VALUE);
             setCellMin(0);
             setWrapping(true);
+            setPointerWrapping(true);
             setTapeLength(50000);
         } else if (standard.equals("extbp")) {
             setCellMax(Long.MAX_VALUE);
             setCellMin(Long.MIN_VALUE);
             setWrapping(true);
+            setPointerWrapping(true);
             setTapeLength(100000);
         }
         return true;
@@ -472,5 +500,17 @@ public class BrainParser extends TuringMachine {
      */
     public boolean getWrapping() {
         return doesWrapping;
+    }
+    /**
+     * Sets whether the pointer should wrap to the first cell if it goes past the last cell and vice versa.
+     */
+    public void setPointerWrapping(boolean _doesWrap) {
+        doesPointerWrapping = _doesWrap;
+    }
+    /**
+     * Gets whether the pointer should wrap to the first cell if it goes past the last cell and vice versa.
+     */
+    public boolean getPointerWrapping() {
+        return doesPointerWrapping;
     }
 }

@@ -18,6 +18,8 @@ public class TuringMachine {
     protected int lowOps = 0;
     /** How many high level operations this machine has performed */
     protected int highOps = 0;
+    /** If the program should error on the pointer going out of the bounds of the tape */
+    protected boolean doesPointerSaftey;
 
     /**
      * Constructor to create a turing machine with tape.length = size
@@ -26,9 +28,10 @@ public class TuringMachine {
      * @see BrainParser
      * @param size The length of the tape to be created with the machine
      */
-    public TuringMachine(int size) {
+    public TuringMachine(int size, boolean _doesPointerSaftey) {
         tape = new long[size];
         tapeLength = size;
+        doesPointerSaftey = _doesPointerSaftey;
     }
 
     /**
@@ -42,6 +45,7 @@ public class TuringMachine {
     public TuringMachine() {
         tape = new long[DEFAULT_SIZE];
         tapeLength = DEFAULT_SIZE;
+        doesPointerSaftey = false;
     }
 
     /**
@@ -216,12 +220,27 @@ public class TuringMachine {
     }
 
     /**
+     * Sets whether the pointers position should always be valid
+     */
+    public void setPointerSaftey(boolean _doesPointerSaftey) {
+        doesPointerSaftey = _doesPointerSaftey;
+    }
+
+    /**
+     * Gets whether the pointers position should always be valid
+     */
+    public boolean getPointerSaftey() {
+        return doesPointerSaftey;
+    }
+
+    /**
      * Utility function to check if the pointer is at a valid position on the tape.
      * 
      * @return Returns a boolean denoting whether the {@link #pointer pointer} is at
      *         a valid position on the tape or not.
      */
     private boolean isPointerValid() {
+        if (!doesPointerSaftey) return true;
         return (pointer >= 0 && pointer < tape.length);
     }
 }
