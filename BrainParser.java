@@ -36,7 +36,6 @@ import java.util.Scanner;
 public class BrainParser extends TuringMachine {
     // what values are prefixed with to distinguish them from commands
     private static final char VALUE_PREFIX = 'T';
-
     /**
      * The scanner used for reading user input
      * 

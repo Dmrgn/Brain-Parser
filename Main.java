@@ -63,7 +63,7 @@ public class Main {
             System.out.println("Setting the language standard to : " + bp.getLanguageStandard());
             System.out.println("This language standard has " + bp.getWrapping() + " for cell wrapping, " + bp.getPointerWrapping() + " for pointer wrapping, " + bp.getCellMin() + " for the cell min and " + bp.getCellMax() + " for the cell max.");
     
-            // run the same program as above under a different language standar
+            // run the same program as above under a different language standard
             System.out.println("Now lets run the same triangle program as above in this new standard.");
             System.out.println("Please enter an integer from 10-30:");
             bp.runProgram(new File("examples/triangle.bp"));
