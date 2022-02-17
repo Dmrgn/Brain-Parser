@@ -1,6 +1,6 @@
 # BrainParser
 
-An ever so slightly less painful version of Brain****.
+An ever so slightly less painful version of Brain****. Interpreter written in Java. 
 
 # Setup
 
